@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarini · Student Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f4f7fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            padding: 30px 35px;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: relative;
+        }
+        .logo-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        .logo-top img {
+            max-height: 150px;
+            width: auto;
+            object-fit: contain;
+        }
+        .logo-placeholder {
+            background: #1e2a3a;
+            color: white;
+            font-weight: 600;
+            padding: 18px 40px;
+            border-radius: 60px;
+            letter-spacing: 1px;
+            font-size: 1.8rem;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .profile-photo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-photo {
+            flex-shrink: 0;
+            display: none;
+        }
+        .profile-photo img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #e9edf4;
+            background: #f0f4fa;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+            display: block;
+        }
+        .profile-photo.visible {
+            display: block;
+        }
+        .photo-fallback {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #d0dae8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2a3a50;
+            font-size: 2rem;
+            border: 3px solid #e9edf4;
+        }
+        .photo-warning {
+            font-size: 0.65rem;
+            color: #000000;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 4px;
+            max-width: 120px;
+            line-height: 1.2;
+            display: none;
+        }
+        .photo-warning.visible {
+            display: block;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1.5px solid #d0d8e4;
+            color: #3a4a5e;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            display: none;
+            white-space: nowrap;
+        }
+        .logout-btn:hover {
+            background: #f0f4fa;
+            border-color: #b0bccd;
+            color: #1e2a3a;
+        }
+        .logout-btn.visible {
+            display: inline-block;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px 30px;
+            margin: 10px 0 30px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid #e9edf4;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 20px 30px;
+        }
+        .login-field {
+            display: flex;
+            flex-direction: column;
+            flex: 1 0 180px;
+            position: relative;
+        }
+        .login-field label {
+            font-weight: 600;
+            color: #1e2a3a;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+        .login-field input {
+            padding: 12px 16px;
+            border: 1px solid #d9e0e8;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            background: #fafcff;
+            transition: 0.15s;
+            width: 100%;
+            padding-right: 46px;
+        }
+        .login-field input:focus {
+            border-color: #2a6df4;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(42, 109, 244, 0.15);
+        }
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            bottom: 12px;
+            cursor: pointer;
+            color: #6b7f96;
+            font-size: 1.1rem;
+            transition: 0.15s;
+            background: transparent;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 30px;
+            z-index: 2;
+        }
+        .password-toggle:hover {
+            color: #1e2a3a;
+        }
+
+        .login-btn {
+            background: #1e2a3a;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 34px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.15s;
+            letter-spacing: 0.3px;
+            margin-left: auto;
+            border: 1px solid #1e2a3a;
+        }
+        .login-btn:hover {
+            background: #2a3a50;
+            transform: scale(1.01);
+        }
+        .login-error {
+            color: #c72a2a;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .logged-in-section {
+            display: none;
+            margin-top: 10px;
+        }
+        .profile-card {
+            background: #f9fbfe;
+            border-radius: 28px;
+            padding: 22px 28px;
+            border: 1px solid #eef2f8;
+            margin-bottom: 30px;
+        }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px 20px;
+        }
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5e6f88;
+            font-weight: 600;
+        }
+        .profile-item .value {
+            font-weight: 500;
+            color: #0f1a2b;
+            word-break: break-word;
+        }
+        .age-highlight {
+            background: #e3edfb;
+            padding: 4px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 600;
+            color: #0047b3;
+        }
+        .subject-badge {
+            display: inline-block;
+            background: #eef3fc;
+            padding: 5px 14px;
+            border-radius: 30px;
+            margin-right: 8px;
+            margin-top: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .subject-badge:hover {
+            background: #dce6f5;
+            transform: scale(1.02);
+        }
+        .subject-badge.active {
+            border-color: #1a73e8;
+            background: #d4e2fc;
+        }
+        .subject-badge-all {
+            background: #1e2a3a;
+            color: white;
+            border: 2px solid #1e2a3a;
+        }
+        .subject-badge-all:hover {
+            background: #2a3a50;
+        }
+        .subject-badge-all.active {
+            border-color: #1a73e8;
+            background: #1e2a3a;
+        }
+
+        .status-section {
+            margin: 20px 0 25px 0;
+        }
+        .status-section h3 {
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 14px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Subject Tabs */
+        .subject-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 8px;
+        }
+        .subject-tab {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: 1.5px solid #dce4ed;
+            background: white;
+            color: #3a4a5e;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .subject-tab:hover {
+            background: #f0f4fa;
+            border-color: #b0bccd;
+        }
+        .subject-tab.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .subject-tab i {
+            margin-right: 4px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .filter-btn {
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: 1.5px solid #dce4ed;
+            background: white;
+            color: #3a4a5e;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .filter-btn:hover {
+            background: #f0f4fa;
+            border-color: #b0bccd;
+        }
+        .filter-btn.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .filter-btn i {
+            margin-right: 4px;
+        }
+
+        /* Date Filter */
+        .date-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e9edf4;
+        }
+        .date-filter-container label {
+            font-weight: 600;
+            color: #1a2a3a;
+            font-size: 0.85rem;
+        }
+        .date-filter-container input[type="date"] {
+            padding: 6px 12px;
+            border: 1px solid #d4dce6;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            background: white;
+            color: #1a2a3a;
+        }
+        .date-filter-container input[type="date"]:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+        }
+        .date-filter-btn {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: none;
+            background: #1a73e8;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .date-filter-btn:hover {
+            background: #1557b0;
+        }
+        .date-filter-btn.reset-btn {
+            background: #e8e8e8;
+            color: #3a4a5e;
+        }
+        .date-filter-btn.reset-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .status-table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #e9edf4;
+            background: white;
+        }
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 800px;
+        }
+        .status-table th {
+            background: #f2f6fc;
+            color: #1a2a3a;
+            font-weight: 600;
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 2px solid #dce4ed;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .status-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef2f8;
+            vertical-align: middle;
+        }
+        .status-table tr:last-child td {
+            border-bottom: none;
+        }
+        .status-table tr:hover td {
+            background: #fafcff;
+        }
+        .subject-name-cell {
+            font-weight: 600;
+            color: #1a2a3a;
+        }
+        .badge-status {
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .badge-status.pending {
+            background: #fef3d7;
+            color: #9d6f0a;
+        }
+        .badge-status.submitted {
+            background: #d4e6fc;
+            color: #1a5a8a;
+        }
+        .badge-status.rejected {
+            background: #fad5d5;
+            color: #a12b2b;
+        }
+        .badge-status.approved {
+            background: #c8f0d6;
+            color: #0c5e2a;
+        }
+        .badge-status.overdue {
+            background: #e0e0e0;
+            color: #666666;
+        }
+        .badge-status.marks {
+            background: #e8f0fe;
+            color: #1a3a6a;
+            font-weight: 700;
+        }
+        .subject-action-btn {
+            background: #eef3fc;
+            border: none;
+            color: #1a3a6a;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .subject-action-btn:hover {
+            background: #dce6f5;
+        }
+        .subject-action-btn i {
+            font-size: 0.7rem;
+        }
+        .subject-action-btn.approved-btn {
+            background: #c8f0d6;
+            color: #0c5e2a;
+        }
+        .subject-action-btn.approved-btn:hover {
+            background: #b0e6c4;
+        }
+        .subject-action-btn.rejected-btn {
+            background: #fad5d5;
+            color: #a12b2b;
+        }
+        .subject-action-btn.rejected-btn:hover {
+            background: #f5c0c0;
+        }
+        .subject-action-btn.inactive {
+            background: #e8e8e8;
+            color: #888888;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .subject-action-btn.overdue-pay-btn {
+            background: #fef3d7;
+            color: #9d6f0a;
+            border: 2px solid #e6a817;
+            font-weight: 700;
+        }
+        .subject-action-btn.overdue-pay-btn:hover {
+            background: #fce8b8;
+            transform: scale(1.02);
+        }
+        .marks-display {
+            font-weight: 600;
+            color: #0c5e2a;
+        }
+
+        .status-note {
+            background: #fff8e6;
+            border-left: 4px solid #e6a817;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #5a4a1a;
+        }
+        .status-note i {
+            color: #e6a817;
+            margin-right: 8px;
+        }
+        .status-note strong {
+            color: #b13a3a;
+        }
+
+        .submission-btn-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 30px 0;
+        }
+        .start-submission-btn {
+            background: #1a73e8;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 16px 48px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #1a73e8;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .start-submission-btn:hover {
+            background: #1557b0;
+            border-color: #1557b0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.35);
+        }
+        .start-submission-btn i {
+            font-size: 1.2rem;
+        }
+
+        .logo-bottom {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e3e9f2;
+        }
+        .logo-bottom img {
+            max-height: 130px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        @media (max-width: 650px) {
+            .container { padding: 16px; }
+            .login-btn { margin-left: 0; width: 100%; }
+            .top-bar { 
+                flex-direction: column; 
+                align-items: center;
+                position: relative;
+            }
+            .logo-top { 
+                flex: none; 
+                width: 100%;
+                justify-content: center;
+            }
+            .logo-top img {
+                max-height: 100px;
+            }
+            .top-right {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                margin-top: 8px;
+                justify-content: center;
+                width: 100%;
+                align-items: center;
+            }
+            .profile-photo img { width: 56px; height: 56px; }
+            .logout-btn { font-size: 0.75rem; padding: 6px 12px; }
+            .start-submission-btn { padding: 14px 28px; font-size: 1rem; width: 100%; justify-content: center; }
+            .submission-btn-wrapper { width: 100%; }
+            .logo-bottom img {
+                max-height: 90px;
+            }
+            .status-table { font-size: 0.75rem; min-width: 650px; }
+            .status-table th, .status-table td { padding: 8px 10px; }
+            .photo-warning { max-width: 100px; font-size: 0.6rem; }
+            .subject-tab { font-size: 0.7rem; padding: 4px 12px; }
+            .filter-btn { font-size: 0.65rem; padding: 3px 10px; }
+            .date-filter-container { flex-direction: column; align-items: stretch; }
+            .date-filter-container input[type="date"] { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="appContainer">
+
+    <div class="top-bar">
+        <div class="logo-top">
+            <img src="logo1.png" alt="Logo 1" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'logo-placeholder\'><i class=\'fas fa-graduation-cap\'></i> LOGO 1</span>';">
+        </div>
+        <div class="top-right">
+            <div class="profile-photo-wrapper">
+                <div class="profile-photo" id="profilePhotoContainer">
+                    <img src="photo.png" alt="Profile photo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'photo-fallback\'><i class=\'fas fa-user-circle\'></i></div>';">
+                </div>
+                <div class="photo-warning" id="photoWarning">
+                    <i class="fas fa-exclamation-triangle"></i> Need to upload a proper photo or the admission will be cancelled
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="login-card" id="loginPanel">
+        <div class="login-field">
+            <label><i class="fas fa-user"></i> Login ID</label>
+            <input type="text" id="loginId" placeholder="Enter Login ID" autocomplete="off">
+        </div>
+        <div class="login-field" id="passwordFieldWrapper">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="loginPass" placeholder="Enter Password" autocomplete="off">
+            <button type="button" class="password-toggle" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+        </div>
+        <button class="login-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <div id="loginError" class="login-error"></div>
+    </div>
+
+    <div class="logged-in-section" id="loggedInContent">
+
+        <div class="profile-card">
+            <div class="profile-grid">
+                <div class="profile-item"><span class="label">Name</span><span class="value">Tarini Rupesh Vaidya</span></div>
+                <div class="profile-item"><span class="label">Date of Birth</span><span class="value">25th Feb 2012</span></div>
+                <div class="profile-item"><span class="label">Age (live)</span><span class="value age-highlight" id="ageDisplay">—</span></div>
+                <div class="profile-item"><span class="label">Permanent Address</span><span class="value">45/3 Narsinha Niwas, Dr. MB Raut Road Shivaji Park, Dadar West, Mumbai, Maharashatra, India 400028</span></div>
+                <div class="profile-item"><span class="label">Correspondence</span><span class="value">404 Marigold, Park Springs Society, Porwal Road, Lohegaon, Pune, Maharashatra, India411047</span></div>
+                <div class="profile-item"><span class="label">Registered Email</span><span class="value">rupesh78.rv@gmail.com</span></div>
+                <div class="profile-item"><span class="label">Registered Contact</span><span class="value">+91 7517892718</span></div>
+                <div class="profile-item"><span class="label">Alternate Contact</span><span class="value">+91 9503222797</span></div>
+                <div class="profile-item"><span class="label">Aadhar Number</span><span class="value">361444573084</span></div>
+            </div>
+            <div style="margin-top: 12px;">
+                <span class="label">Subjects Selected</span>
+                <div id="subjectBadgesContainer">
+                    <span class="subject-badge subject-badge-all active" data-filter="all">All Subjects</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-section">
+            <h3>
+                <i class="fas fa-list-check"></i> Submission Status
+                <span style="font-size: 0.75rem; font-weight: 400; color: #5a6f88; margin-left: 8px;" id="filterLabel">(Showing: All)</span>
+            </h3>
+            
+            <!-- Subject Tabs -->
+            <div class="subject-tabs" id="subjectTabs">
+                <!-- Generated by JavaScript -->
+            </div>
+            
+            <!-- Date Filter -->
+            <div class="date-filter-container">
+                <label><i class="fas fa-calendar-alt"></i> Filter by Due Date:</label>
+                <input type="date" id="dateFilterFrom" placeholder="From">
+                <span style="color: #5a6f88;">to</span>
+                <input type="date" id="dateFilterTo" placeholder="To">
+                <button class="date-filter-btn" id="applyDateFilter"><i class="fas fa-filter"></i> Apply</button>
+                <button class="date-filter-btn reset-btn" id="resetDateFilter"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+            
+            <!-- Submission Type Filter Buttons -->
+            <div class="filter-buttons" id="filterButtons">
+                <!-- Generated by JavaScript -->
+            </div>
+            
+            <div class="status-table-wrap">
+                <table class="status-table">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Book Name</th>
+                            <th>Page From</th>
+                            <th>Page To</th>
+                            <th>Submission Type</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statusTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="status-note">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Warning:</strong> If submissions are not done regularly, your name will be cancelled and you will have to register for the next term.
+            </div>
+			
+			
+			
+			
+			<div class="status-note">
+    <i class="fas fa-envelope-open-text"></i>
+
+    <div class="letter">
+
+        <div style="text-align:right;">
+            <strong>Date:</strong> 09 July 2026
+        </div>
+
+        <br>
+
+        <p><strong>To,</strong><br>
+		<br>
+        Ms. Tarini Rupesh Vaidya</p>
+		<br>
+
+        <p><strong>Subject:</strong> Confirmation of Admission</p>
+		<br>
+
+        <p>Dear Ms. Tarini Rupesh Vaidya,</p>
+		
+<br>
+
+        <p>
+            We are pleased to inform you that your admission to the Secondary
+            (Class X) Course has been <strong>confirmed on 09 July 2026</strong>.
+        </p>
+<br>
+        <p>
+            <strong>Congrats!</strong>
+            It states that, due to an exceptionally high number of applications
+            (over 10 lakh admissions each year), examination scheduling has been
+            extended and your first opportunity to appear for the Secondary
+            Examination will be in <strong>2029</strong>.
+        </p>
+<br>
+        <p>
+            Please do not worry as you will have a period of
+            <strong>five years</strong> to complete your Secondary examinations,
+            providing you with sufficient time to prepare thoroughly and appear
+            confidently.
+        </p>
+		
+<br>		
+        <p>
+            We encourage you to continue your studies consistently and make the
+            best use of this period by participating in academic, skill
+            development, sports, arts, and other extracurricular activities.
+        </p>
+<br>
+        <p>
+            We wish you every success in your educational journey.
+        </p>
+
+        <br>
+
+        <p>Yours faithfully,</p>
+
+        <p>
+		<br>
+            <strong>Admissions Department</strong><br>
+            National Institute of Open Schooling (NIOS)
+        </p>
+		<br>
+		<p>
+            <strong>Notice:</strong> For the purposes of this above examination Year,
+			Tarini Rupesh Vaidya is requested to send an email from the registered email
+			address confirming her willingness to appear for the examination in
+			<strong>2029</strong>. Upon receipt of the email, the submission and examination schedule
+			in this system will be updated accordingly.
+        </p>
+<br>
+
+    </div>
+</div>
+			
+			
+			
+        </div>
+
+        <div class="submission-btn-wrapper">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform?usp=header" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="start-submission-btn">
+                <i class="fas fa-pen-to-square"></i> Start Submission
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="logo-bottom">
+            <img src="logo2.png" alt="Logo 2" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'logo-placeholder\' style=\'background:#3a4a5e;\'><i class=\'fas fa-school\'></i> LOGO 2</span>';">
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ================================================================
+        // 🔽 🔽 🔽  EASY EDITING SECTION - EDIT EVERYTHING HERE  🔽 🔽 🔽
+        // ================================================================
+
+        // 1. GOOGLE FORM URL - Change this to your form URL
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform?usp=header';
+
+        // 2. 📋 STATUS TABLE DATA - EDIT YOUR ENTIRE TABLE HERE 📋
+        // For marks: use format "scored/total" in the status field (e.g., "15/20")
+        // For regular status: use 'pending', 'submitted', 'rejected', 'approved'
+        const tableData = [
+            // English Back Q & A
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '68', submissionType: 'Back Q & A', dueDate: '2026-07-20', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '69', pageTo: '136', submissionType: 'Back Q & A', dueDate: '2026-09-07', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '202', submissionType: 'Back Q & A', dueDate: '2026-11-09', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '203', pageTo: '258', submissionType: 'Back Q & A', dueDate: '2027-02-08', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+
+            // English Doubts    
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '68', submissionType: 'Doubts', dueDate: '2026-07-15', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '69', pageTo: '136', submissionType: 'Doubts', dueDate: '2026-09-03', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '202', submissionType: 'Doubts', dueDate: '2027-11-05', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '203', pageTo: '258', submissionType: 'Doubts', dueDate: '2027-02-04', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+                            
+            // English Work sheet        
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '68', submissionType: 'Work Sheet', dueDate: '2026-07-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '69', pageTo: '136', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '202', submissionType: 'Work Sheet', dueDate: '2026-09-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '203', pageTo: '258', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+
+            // Weekly Test - with marks (scored/total)
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '32', submissionType: 'Weekly Test', dueDate: '2026-07-12', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '33', pageTo: '68', submissionType: 'Weekly Test', dueDate: '2026-08-9', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+			{ subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '68', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },           
+			
+			{ subject: 'English', book: 'NCERT Kaveri', pageFrom: '69', pageTo: '96', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '97', pageTo: '136', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '168', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '169', pageTo: '202', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+			{ subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '202', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },            
+			
+			{ subject: 'English', book: 'NCERT Kaveri', pageFrom: '203', pageTo: '230', submissionType: 'Weekly Test', dueDate: '2027-0-0', status: 'pending', driveLink: '' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '231', pageTo: '258', submissionType: 'Weekly Test', dueDate: '2027-0-0', status: 'pending', driveLink: '' },
+			
+			
+
+            // Project
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '136', submissionType: 'Project', dueDate: '2026-09-05', status: 'pending', driveLink: '' },
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '258', submissionType: 'Project', dueDate: '2027-02-05', status: 'pending', driveLink: '' },
+
+
+            // UT I - with marks
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '68', submissionType: 'Aug 26 UT I', dueDate: '2026-08-20', status: 'pending', driveLink: '' },
+
+            // Term I - with marks
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '1', pageTo: '136', submissionType: 'Oct 26 Term I', dueDate: '2026-10-20', status: 'pending', driveLink: '' },
+
+            // UT II - with marks
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '202', submissionType: 'Jan 27 UT II', dueDate: '2027-01-20', status: 'pending', driveLink: '' },
+
+            // Term II - with marks
+            { subject: 'English', book: 'NCERT Kaveri', pageFrom: '137', pageTo: '258', submissionType: 'Apr 27 Term II', dueDate: '2027-03-20', status: 'pending', driveLink: '' },
+
+
+
+            // Hindi
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '61', submissionType: 'Back Q & A', dueDate: '2026-07-20', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '62', pageTo: '119', submissionType: 'Back Q & A', dueDate: '2026-09-07', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '165', submissionType: 'Back Q & A', dueDate: '2026-11-09', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '166', pageTo: '206', submissionType: 'Back Q & A', dueDate: '2027-02-08', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Hindi Doubts    
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '61', submissionType: 'Doubts', dueDate: '2026-07-15', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '62', pageTo: '119', submissionType: 'Doubts', dueDate: '2026-09-03', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '165', submissionType: 'Doubts', dueDate: '2027-11-05', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '166', pageTo: '206', submissionType: 'Doubts', dueDate: '2027-02-04', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+                            
+            // Hindi Work sheet        
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '61', submissionType: 'Work Sheet', dueDate: '2026-07-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '62', pageTo: '119', submissionType: 'Work Sheet', dueDate: '2026-07-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '165', submissionType: 'Work Sheet', dueDate: '2026-09-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '166', pageTo: '206', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Weekly Test - with marks (scored/total)
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '44', submissionType: 'Weekly Test', dueDate: '2026-07-19', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '45', pageTo: '61', submissionType: 'Weekly Test', dueDate: '2026-08-9', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+			{ subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '61', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '62', pageTo: '83', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '84', pageTo: '119', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+			
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '152', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '153', pageTo: '165', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+			{ subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '165', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+			         
+			{ subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '166', pageTo: '175', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '176', pageTo: '206', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+
+
+
+
+            // Project
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '119', submissionType: 'Project', dueDate: '2026-09-07', status: 'pending', driveLink: '' },
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '206', submissionType: 'Project', dueDate: '2027-02-08', status: 'pending', driveLink: '' },
+
+
+            // UT I - with marks
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '61', submissionType: 'Aug 26 UT I', dueDate: '2026-08-22', status: 'pending', driveLink: '' },
+
+            // Term I - with marks
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '1', pageTo: '119', submissionType: 'Oct 26 Term I', dueDate: '2026-10-22', status: 'pending', driveLink: '' },
+
+            // UT II - with marks
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '165', submissionType: 'Jan 27 UT II', dueDate: '2027-01-22', status: 'pending', driveLink: '' },
+
+            // Term II - with marks
+            { subject: 'Hindi', book: 'NCERT Ganga', pageFrom: '120', pageTo: '206', submissionType: 'Apr 27 Term II', dueDate: '2027-03-22', status: 'pending', driveLink: '' },
+			
+			
+			
+
+            // Mathematics
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '40', submissionType: 'Back Q & A', dueDate: '2026-07-27', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '41', pageTo: '91', submissionType: 'Back Q & A', dueDate: '2026-09-14', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '154', submissionType: 'Back Q & A', dueDate: '2026-11-16', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '155', pageTo: '200', submissionType: 'Back Q & A', dueDate: '2027-02-15', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Mathematics Doubts    
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '40', submissionType: 'Doubts', dueDate: '2026-07-22', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '41', pageTo: '91', submissionType: 'Doubts', dueDate: '2026-09-10', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '154', submissionType: 'Doubts', dueDate: '2027-11-12', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '155', pageTo: '200', submissionType: 'Doubts', dueDate: '2027-02-11', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+                            
+            // Mathematics Work sheet        
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '40', submissionType: 'Work Sheet', dueDate: '2026-07-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '41', pageTo: '91', submissionType: 'Work Sheet', dueDate: '2026-07-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '154', submissionType: 'Work Sheet', dueDate: '2026-09-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '155', pageTo: '200', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Weekly Test - with marks (scored/total)
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '15', submissionType: 'Weekly Test', dueDate: '2026-07-19', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '16', pageTo: '40', submissionType: 'Weekly Test', dueDate: '2026-08-9', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '40', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },            
+			
+			{ subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '41', pageTo: '67', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '68', pageTo: '91', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '117', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '118', pageTo: '154', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '154', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '155', pageTo: '173', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '174', pageTo: '200', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+
+
+
+
+            // Project
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '91', submissionType: 'Project', dueDate: '2026-09-09', status: 'pending', driveLink: '' },
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '200', submissionType: 'Project', dueDate: '2027-02-09', status: 'pending', driveLink: '' },
+
+
+            // UT I - with marks
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '40', submissionType: 'Aug 26 UT I', dueDate: '2026-08-24', status: 'pending', driveLink: '' },
+
+            // Term I - with marks
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '1', pageTo: '91', submissionType: 'Oct 26 Term I', dueDate: '2026-10-24', status: 'pending', driveLink: '' },
+
+            // UT II - with marks
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '154', submissionType: 'Jan 27 UT II', dueDate: '2027-01-25', status: 'pending', driveLink: '' },
+
+            // Term II - with marks
+            { subject: 'Mathematics', book: 'NCERT Ganita Manjari', pageFrom: '92', pageTo: '200', submissionType: 'Apr 27 Term II', dueDate: '2027-03-24', status: 'pending', driveLink: '' },
+
+            
+			
+			
+			
+			
+			
+			
+			// Science
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '47', submissionType: 'Back Q & A', dueDate: '2026-07-27', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '48', pageTo: '139', submissionType: 'Back Q & A', dueDate: '2026-09-14', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '207', submissionType: 'Back Q & A', dueDate: '2026-11-16', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '208', pageTo: '272', submissionType: 'Back Q & A', dueDate: '2027-02-15', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Science Doubts    
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '47', submissionType: 'Doubts', dueDate: '2026-07-22', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '48', pageTo: '139', submissionType: 'Doubts', dueDate: '2026-09-10', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '207', submissionType: 'Doubts', dueDate: '2027-11-12', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '208', pageTo: '272', submissionType: 'Doubts', dueDate: '2027-02-11', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+                            
+            // Science Work sheet        
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '47', submissionType: 'Work Sheet', dueDate: '2026-07-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '48', pageTo: '139', submissionType: 'Work Sheet', dueDate: '2026-07-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '207', submissionType: 'Work Sheet', dueDate: '2026-09-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '208', pageTo: '272', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Weekly Test - with marks (scored/total)
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '27', submissionType: 'Weekly Test', dueDate: '2026-07-19', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '28', pageTo: '47', submissionType: 'Weekly Test', dueDate: '2026-08-9', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '47', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },	
+            
+			{ subject: 'Science', book: 'NCERT Exploration', pageFrom: '48', pageTo: '93', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '94', pageTo: '139', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '183', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '184', pageTo: '207', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '207', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },			
+            
+			{ subject: 'Science', book: 'NCERT Exploration', pageFrom: '208', pageTo: '251', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '252', pageTo: '272', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+
+
+            // Project
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '139', submissionType: 'Project', dueDate: '2026-09-11', status: 'pending', driveLink: '' },
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '140', pageTo: '272', submissionType: 'Project', dueDate: '2027-02-11', status: 'pending', driveLink: '' },
+
+
+            // UT I - with marks
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '40', submissionType: 'Aug 26 UT I', dueDate: '2026-08-26', status: 'pending', driveLink: '' },
+
+            // Term I - with marks
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '1', pageTo: '91', submissionType: 'Oct 26 Term I', dueDate: '2026-10-26', status: 'pending', driveLink: '' },
+
+            // UT II - with marks
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '92', pageTo: '154', submissionType: 'Jan 27 UT II', dueDate: '2027-01-25', status: 'pending', driveLink: '' },
+
+            // Term II - with marks
+            { subject: 'Science', book: 'NCERT Exploration', pageFrom: '92', pageTo: '200', submissionType: 'Apr 27 Term II', dueDate: '2027-03-26', status: 'pending', driveLink: '' },
+
+            
+			
+			
+			// Social Science
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '38', submissionType: 'Back Q & A', dueDate: '2026-07-27', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '39', pageTo: '136', submissionType: 'Back Q & A', dueDate: '2026-09-14', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '182', submissionType: 'Back Q & A', dueDate: '2026-11-16', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '183', pageTo: '220', submissionType: 'Back Q & A', dueDate: '2027-02-15', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Social Science Doubts    
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '38', submissionType: 'Doubts', dueDate: '2026-07-22', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '39', pageTo: '136', submissionType: 'Doubts', dueDate: '2026-09-10', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '182', submissionType: 'Doubts', dueDate: '2027-11-12', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '183', pageTo: '220', submissionType: 'Doubts', dueDate: '2027-02-11', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+                            
+            // Social Science Work sheet        
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '38', submissionType: 'Work Sheet', dueDate: '2026-07-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '39', pageTo: '136', submissionType: 'Work Sheet', dueDate: '2026-07-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '182', submissionType: 'Work Sheet', dueDate: '2026-09-18', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '183', pageTo: '220', submissionType: 'Work Sheet', dueDate: '2026-09-25', status: 'pending', driveLink: 'https://docs.google.com/forms/d/e/1FAIpQLScXgJeruLzVbYy6Ek8mUujjCF4lLiZXp8wa19YOYXYVHeLkcw/viewform' },
+            
+
+            // Weekly Test - with marks (scored/total)
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '12', submissionType: 'Weekly Test', dueDate: '2026-07-19', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '13', pageTo: '38', submissionType: 'Weekly Test', dueDate: '2026-08-9', status: 'pending', driveLink: 'https://drive.google.com/file/d/1abc123def456/view' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '38', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },	
+            
+			{ subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '39', pageTo: '94', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '95', pageTo: '136', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+			{ subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '160', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '161', pageTo: '182', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '182', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },			
+            
+			{ subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '183', pageTo: '194', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '195', pageTo: '220', submissionType: 'Weekly Test', dueDate: '2026-0-0', status: 'pending', driveLink: '' },
+            
+
+
+            // Project
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '136', submissionType: 'Project', dueDate: '2026-09-13', status: 'pending', driveLink: '' },
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '137', pageTo: '120', submissionType: 'Project', dueDate: '2027-02-13', status: 'pending', driveLink: '' },
+
+
+            // UT I - with marks
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '40', submissionType: 'Aug 26 UT I', dueDate: '2026-08-28', status: 'pending', driveLink: '' },
+
+            // Term I - with marks
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '1', pageTo: '91', submissionType: 'Oct 26 Term I', dueDate: '2026-10-28', status: 'pending', driveLink: '' },
+
+            // UT II - with marks
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '92', pageTo: '154', submissionType: 'Jan 27 UT II', dueDate: '2027-01-28', status: 'pending', driveLink: '' },
+
+            // Term II - with marks
+            { subject: 'Social Science', book: 'NCERT Understanding Society India & Beyond', pageFrom: '92', pageTo: '200', submissionType: 'Apr 27 Term II', dueDate: '2027-03-29', status: 'pending', driveLink: '' },
+			
+			
+        ];
+
+        // 3. DEFAULT DRIVE LINK
+        const DEFAULT_DRIVE_LINK = 'https://drive.google.com/file/d/1_sample_file_id/view';
+
+        // 4. STATUS CONFIGURATION
+        const statusConfig = {
+            pendings: { label: 'Pending', cssClass: 'pending', buttonText: 'Submit', buttonIcon: 'fa-pen', action: 'form' },
+            submitted: { label: 'Submitted', cssClass: 'submitted', buttonText: 'Submitted', buttonIcon: 'fa-check', action: 'none' },
+            rejected: { label: 'Rejected', cssClass: 'rejected', buttonText: 'Resubmit', buttonIcon: 'fa-redo', action: 'form' },
+            approved: { label: 'Approved', cssClass: 'approved', buttonText: 'View File', buttonIcon: 'fa-folder-open', action: 'drive' },
+            overdue: { label: 'Overdue', cssClass: 'overdue', buttonText: 'Pay INR 1500 & Submit', buttonIcon: 'fa-credit-card', action: 'overdue_pay' }
+        };
+
+        // 5. SUBMISSION TYPES (for filter buttons)
+        const submissionTypes = [
+            'Back Q & A', 'Doubts', 'Work Sheet', 'Weekly Test', 
+            'Project', 'Aug 26 UT I', 'Oct 26 Term I', 'Jan 27 UT II', 'Apr 27 Term II'
+        ];
+
+        // 6. TYPES THAT HAVE MARKS (scored/total format)
+        const marksTypes = ['Weekly Test', 'Aug 26 UT I', 'Oct 26 Term I', 'Jan 27 UT II', 'Apr 27 Term II'];
+
+        // ================================================================
+        // 🔼 🔼 🔼  END OF EASY EDITING SECTION  🔼 🔼 🔼
+        // ================================================================
+
+        // ---------- PASSWORD TOGGLE ----------
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const passwordInput = document.getElementById('loginPass');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+            passwordInput.focus();
+        });
+
+        // ---------- ELEMENTS ----------
+        const loginBtn = document.getElementById('loginBtn');
+        const loginId = document.getElementById('loginId');
+        const loginError = document.getElementById('loginError');
+        const loggedInSection = document.getElementById('loggedInContent');
+        const loginPanel = document.getElementById('loginPanel');
+        const ageDisplay = document.getElementById('ageDisplay');
+        const profilePhoto = document.getElementById('profilePhotoContainer');
+        const photoWarning = document.getElementById('photoWarning');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const statusBody = document.getElementById('statusTableBody');
+        const filterLabel = document.getElementById('filterLabel');
+        const subjectTabsContainer = document.getElementById('subjectTabs');
+        const filterButtonsContainer = document.getElementById('filterButtons');
+        const subjectBadgesContainer = document.getElementById('subjectBadgesContainer');
+        
+        // Date filter elements
+        const dateFilterFrom = document.getElementById('dateFilterFrom');
+        const dateFilterTo = document.getElementById('dateFilterTo');
+        const applyDateFilter = document.getElementById('applyDateFilter');
+        const resetDateFilter = document.getElementById('resetDateFilter');
+
+        let currentSubjectFilter = 'all';
+        let currentTypeFilter = 'all';
+        let currentDateFrom = '';
+        let currentDateTo = '';
+
+        // ---------- AGE CALCULATION ----------
+        function calculateAge() {
+            const dob = new Date(2012, 1, 25);
+            const now = new Date();
+            let years = now.getFullYear() - dob.getFullYear();
+            let months = now.getMonth() - dob.getMonth();
+            let days = now.getDate() - dob.getDate();
+            let hours = now.getHours();
+            let seconds = now.getSeconds();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            return `${years} Years ${months} Months ${days} Days ${hours} Hours ${seconds} Seconds`;
+        }
+
+        function updateAge() {
+            if (ageDisplay) {
+                ageDisplay.textContent = calculateAge();
+            }
+        }
+
+        // ---------- CHECK IF DUE DATE IS PASSED ----------
+        function isOverdue(dueDate) {
+            if (!dueDate) return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate);
+            due.setHours(0, 0, 0, 0);
+            return today > due;
+        }
+
+        // ---------- CHECK IF STATUS IS MARKS FORMAT ----------
+        function isMarksFormat(status) {
+            return /^\d+\/\d+$/.test(status);
+        }
+
+        // ---------- GET UNIQUE SUBJECTS ----------
+        function getUniqueSubjects() {
+            const subjects = tableData.map(row => row.subject);
+            return [...new Set(subjects)];
+        }
+
+        // ---------- GENERATE SUBJECT TABS ----------
+        function generateSubjectTabs() {
+            const subjects = getUniqueSubjects();
+            subjectTabsContainer.innerHTML = '';
+            
+            const allTab = document.createElement('button');
+            allTab.className = 'subject-tab active';
+            allTab.dataset.subject = 'all';
+            allTab.innerHTML = '<i class="fas fa-th-list"></i> All Subjects';
+            subjectTabsContainer.appendChild(allTab);
+
+            subjects.forEach(subject => {
+                const tab = document.createElement('button');
+                tab.className = 'subject-tab';
+                tab.dataset.subject = subject;
+                tab.innerHTML = `<i class="fas fa-book"></i> ${subject}`;
+                subjectTabsContainer.appendChild(tab);
+            });
+        }
+
+        // ---------- GENERATE TYPE FILTER BUTTONS ----------
+        function generateTypeFilters() {
+            filterButtonsContainer.innerHTML = '';
+            
+            const allBtn = document.createElement('button');
+            allBtn.className = 'filter-btn active';
+            allBtn.dataset.type = 'all';
+            allBtn.innerHTML = '<i class="fas fa-th-list"></i> All Types';
+            filterButtonsContainer.appendChild(allBtn);
+
+            submissionTypes.forEach(type => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.type = type;
+                btn.textContent = type;
+                filterButtonsContainer.appendChild(btn);
+            });
+        }
+
+        // ---------- GENERATE SUBJECT BADGES ----------
+        function generateSubjectBadges() {
+            const subjects = getUniqueSubjects();
+            subjectBadgesContainer.innerHTML = '';
+            
+            const allBadge = document.createElement('span');
+            allBadge.className = 'subject-badge subject-badge-all active';
+            allBadge.dataset.filter = 'all';
+            allBadge.textContent = 'All Subjects';
+            subjectBadgesContainer.appendChild(allBadge);
+
+            subjects.forEach(subject => {
+                const badge = document.createElement('span');
+                badge.className = 'subject-badge';
+                badge.dataset.filter = subject;
+                badge.textContent = subject;
+                subjectBadgesContainer.appendChild(badge);
+            });
+        }
+
+        // ---------- RENDER STATUS TABLE ----------
+        function renderStatusTable() {
+            statusBody.innerHTML = '';
+            
+            let filteredData = tableData;
+            
+            // Filter by subject
+            if (currentSubjectFilter !== 'all') {
+                filteredData = filteredData.filter(item => item.subject === currentSubjectFilter);
+            }
+            
+            // Filter by submission type
+            if (currentTypeFilter !== 'all') {
+                filteredData = filteredData.filter(item => item.submissionType === currentTypeFilter);
+            }
+            
+            // Filter by date range
+            if (currentDateFrom) {
+                filteredData = filteredData.filter(item => item.dueDate >= currentDateFrom);
+            }
+            if (currentDateTo) {
+                filteredData = filteredData.filter(item => item.dueDate <= currentDateTo);
+            }
+            
+            if (filteredData.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 8;
+                td.style.textAlign = 'center';
+                td.style.padding = '30px';
+                td.style.color = '#5a6f88';
+                td.innerHTML = '<i class="fas fa-info-circle"></i> No submissions found.';
+                tr.appendChild(td);
+                statusBody.appendChild(tr);
+                return;
+            }
+
+            filteredData.forEach((item) => {
+                const tr = document.createElement('tr');
+                
+                // Check if status is marks format
+                const isMarks = isMarksFormat(item.status);
+                
+                let effectiveStatus = item.status;
+                let config = null;
+                let displayStatus = item.status;
+                
+                if (isMarks) {
+                    // For marks, display as "Scored/Total" with special styling
+                    effectiveStatus = 'marks';
+                    config = {
+                        label: item.status,
+                        cssClass: 'marks',
+                        buttonText: 'View Marks',
+                        buttonIcon: 'fa-chart-bar',
+                        action: 'marks'
+                    };
+                    displayStatus = item.status;
+                } else {
+                    // Check for overdue
+                    const isOverdueStatus = isOverdue(item.dueDate);
+                    effectiveStatus = isOverdueStatus && (item.status === 'pending' || item.status === 'rejected') 
+                        ? 'overdue' 
+                        : item.status;
+                    config = statusConfig[effectiveStatus];
+                    displayStatus = isOverdueStatus && (item.status === 'pending' || item.status === 'rejected') 
+                        ? 'Overdue' 
+                        : config ? config.label : item.status;
+                }
+                
+                if (!config) return;
+                
+                const tdSubject = document.createElement('td');
+                tdSubject.className = 'subject-name-cell';
+                tdSubject.textContent = item.subject;
+                
+                const tdBook = document.createElement('td');
+                tdBook.textContent = item.book;
+                
+                const tdFrom = document.createElement('td');
+                tdFrom.textContent = item.pageFrom;
+                
+                const tdTo = document.createElement('td');
+                tdTo.textContent = item.pageTo;
+                
+                const tdType = document.createElement('td');
+                tdType.textContent = item.submissionType;
+                
+                const tdDueDate = document.createElement('td');
+                tdDueDate.textContent = item.dueDate;
+                if (!isMarks && isOverdue(item.dueDate) && (item.status === 'pending' || item.status === 'rejected')) {
+                    tdDueDate.style.color = '#a12b2b';
+                    tdDueDate.style.fontWeight = '600';
+                }
+                
+                const tdStatus = document.createElement('td');
+                const statusSpan = document.createElement('span');
+                statusSpan.className = `badge-status ${config.cssClass}`;
+                if (isMarks) {
+                    statusSpan.innerHTML = `<span class="marks-display">${item.status}</span>`;
+                } else {
+                    statusSpan.textContent = displayStatus;
+                }
+                tdStatus.appendChild(statusSpan);
+                
+                const tdAction = document.createElement('td');
+                const actionBtn = document.createElement('a');
+                actionBtn.className = 'subject-action-btn';
+                
+                if (config.action === 'form') {
+                    // Check if overdue - if yes, don't allow direct link access
+                    if (isOverdue(item.dueDate)) {
+                        // Show expired/inactive button - no link access
+                        actionBtn.className = 'subject-action-btn inactive';
+                        actionBtn.href = '#';
+                        actionBtn.innerHTML = `<i class="fas fa-clock"></i> Expired`;
+                        actionBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            alert('⛔ This submission is overdue. Please use the "Pay INR 1500 & Submit" button instead.');
+                        });
+                    } else {
+                        actionBtn.href = GOOGLE_FORM_URL;
+                        actionBtn.target = '_blank';
+                        actionBtn.rel = 'noopener noreferrer';
+                        if (item.status === 'rejected') {
+                            actionBtn.className = 'subject-action-btn rejected-btn';
+                        }
+                        actionBtn.innerHTML = `<i class="fas ${config.buttonIcon}"></i> ${config.buttonText}`;
+                    }
+                } else if (config.action === 'drive') {
+                    const link = item.driveLink && item.driveLink.trim() !== '' ? item.driveLink : DEFAULT_DRIVE_LINK;
+                    actionBtn.href = link;
+                    actionBtn.target = '_blank';
+                    actionBtn.rel = 'noopener noreferrer';
+                    actionBtn.className = 'subject-action-btn approved-btn';
+                    actionBtn.innerHTML = `<i class="fas ${config.buttonIcon}"></i> ${config.buttonText}`;
+                } else if (config.action === 'marks') {
+                    // For marks, show View button that displays the marks
+                    actionBtn.href = '#';
+                    actionBtn.className = 'subject-action-btn';
+                    actionBtn.style.background = '#e8f0fe';
+                    actionBtn.style.color = '#1a3a6a';
+                    actionBtn.innerHTML = `<i class="fas fa-chart-bar"></i> View Marks`;
+                    actionBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        alert(`📊 Marks for ${item.subject} - ${item.submissionType}:\n\nScored: ${item.status.split('/')[0]}\nTotal: ${item.status.split('/')[1]}\nPercentage: ${Math.round((parseInt(item.status.split('/')[0]) / parseInt(item.status.split('/')[1])) * 100)}%`);
+                    });
+                } else if (config.action === 'overdue_pay') {
+                    // For overdue submissions, show payment button with confirmation
+                    actionBtn.href = '#';
+                    actionBtn.className = 'subject-action-btn overdue-pay-btn';
+                    actionBtn.innerHTML = `<i class="fas fa-credit-card"></i> Pay ₹1500 & Submit`;
+                    actionBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Show payment confirmation dialog
+                        const confirmed = confirm(
+                            `⚠️ OVERDUE SUBMISSION\n\n` +
+                            `Subject: ${item.subject}\n` +
+                            `Type: ${item.submissionType}\n` +
+                            `Due Date: ${item.dueDate}\n\n` +
+                            `A late fee of ₹1500 is required to submit this overdue assignment.\n\n` +
+                            `Click "OK" to pay and proceed to the submission form.\n` +
+                            `Click "Cancel" to go back.`
+                        );
+                        if (confirmed) {
+                            // Open the Google Form after payment confirmation
+                            window.open(GOOGLE_FORM_URL, '_blank');
+                            alert('✅ You will now be redirected to the submission form to attach the payment receipt.');
+                        } else {
+                            alert('❌ Payment cancelled. Please pay the late fee to submit this assignment.');
+                        }
+                    });
+                } else if (config.action === 'inactive') {
+                    actionBtn.className = 'subject-action-btn inactive';
+                    actionBtn.href = '#';
+                    actionBtn.innerHTML = `<i class="fas ${config.buttonIcon}"></i> ${config.buttonText}`;
+                    actionBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        alert('⛔ This submission deadline has passed.');
+                    });
+                } else {
+                    actionBtn.href = '#';
+                    actionBtn.style.cursor = 'default';
+                    actionBtn.style.background = '#d4e6fc';
+                    actionBtn.style.color = '#1a5a8a';
+                    actionBtn.innerHTML = `<i class="fas ${config.buttonIcon}"></i> ${config.buttonText}`;
+                    actionBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        alert(`This submission is ${config.label.toLowerCase()}.`);
+                    });
+                }
+                
+                tdAction.appendChild(actionBtn);
+                
+                tr.appendChild(tdSubject);
+                tr.appendChild(tdBook);
+                tr.appendChild(tdFrom);
+                tr.appendChild(tdTo);
+                tr.appendChild(tdType);
+                tr.appendChild(tdDueDate);
+                tr.appendChild(tdStatus);
+                tr.appendChild(tdAction);
+                
+                statusBody.appendChild(tr);
+            });
+        }
+
+        // ---------- UPDATE FILTER LABEL ----------
+        function updateFilterLabel() {
+            let label = '';
+            if (currentSubjectFilter === 'all' && currentTypeFilter === 'all' && !currentDateFrom && !currentDateTo) {
+                label = 'All Subjects & Types';
+            } else {
+                const parts = [];
+                if (currentSubjectFilter !== 'all') parts.push(currentSubjectFilter);
+                if (currentTypeFilter !== 'all') parts.push(currentTypeFilter);
+                if (currentDateFrom || currentDateTo) {
+                    let dateRange = '';
+                    if (currentDateFrom && currentDateTo) dateRange = `${currentDateFrom} to ${currentDateTo}`;
+                    else if (currentDateFrom) dateRange = `from ${currentDateFrom}`;
+                    else if (currentDateTo) dateRange = `until ${currentDateTo}`;
+                    parts.push(`Due: ${dateRange}`);
+                }
+                label = parts.join(' - ') || 'All';
+            }
+            filterLabel.textContent = `(Showing: ${label})`;
+        }
+
+        // ---------- SET FILTERS ----------
+        function setSubjectFilter(subject) {
+            currentSubjectFilter = subject;
+            
+            document.querySelectorAll('.subject-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.subject === subject);
+            });
+            
+            document.querySelectorAll('.subject-badge').forEach(badge => {
+                badge.classList.toggle('active', badge.dataset.filter === subject);
+            });
+            
+            updateFilterLabel();
+            renderStatusTable();
+        }
+
+        function setTypeFilter(type) {
+            currentTypeFilter = type;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            
+            updateFilterLabel();
+            renderStatusTable();
+        }
+
+        function setDateFilter(from, to) {
+            currentDateFrom = from;
+            currentDateTo = to;
+            updateFilterLabel();
+            renderStatusTable();
+        }
+
+        // ---------- SETUP EVENT LISTENERS ----------
+        function setupEventListeners() {
+            document.querySelectorAll('.subject-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    setSubjectFilter(this.dataset.subject);
+                });
+            });
+
+            document.querySelectorAll('.subject-badge').forEach(badge => {
+                badge.addEventListener('click', function() {
+                    setSubjectFilter(this.dataset.filter);
+                });
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setTypeFilter(this.dataset.type);
+                });
+            });
+
+            // Date filter events
+            applyDateFilter.addEventListener('click', function() {
+                const from = dateFilterFrom.value;
+                const to = dateFilterTo.value;
+                setDateFilter(from, to);
+            });
+
+            resetDateFilter.addEventListener('click', function() {
+                dateFilterFrom.value = '';
+                dateFilterTo.value = '';
+                setDateFilter('', '');
+            });
+
+            // Enter key on date inputs
+            dateFilterFrom.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') applyDateFilter.click();
+            });
+            dateFilterTo.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') applyDateFilter.click();
+            });
+        }
+
+        // ---------- LOGIN ----------
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = loginId.value.trim();
+            const pass = passwordInput.value.trim();
+            if (id === 'Tarini123' && pass === 'Tarini@123') {
+                loginError.textContent = '';
+                loginPanel.style.display = 'none';
+                loggedInSection.style.display = 'block';
+                profilePhoto.classList.add('visible');
+                photoWarning.classList.add('visible');
+                logoutBtn.classList.add('visible');
+                updateAge();
+                
+                generateSubjectTabs();
+                generateTypeFilters();
+                generateSubjectBadges();
+                setSubjectFilter('all');
+                setTypeFilter('all');
+                setupEventListeners();
+                
+                if (window.ageInterval) clearInterval(window.ageInterval);
+                window.ageInterval = setInterval(updateAge, 1000);
+            } else {
+                loginError.textContent = '❌ Invalid Login ID or Password. Try again.';
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && loginPanel.style.display !== 'none') {
+                loginBtn.click();
+            }
+        });
+
+        // ---------- LOGOUT ----------
+        logoutBtn.addEventListener('click', function() {
+            loggedInSection.style.display = 'none';
+            loginPanel.style.display = 'flex';
+            profilePhoto.classList.remove('visible');
+            photoWarning.classList.remove('visible');
+            logoutBtn.classList.remove('visible');
+            loginId.value = '';
+            passwordInput.value = '';
+            loginError.textContent = '';
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+            if (window.ageInterval) {
+                clearInterval(window.ageInterval);
+                window.ageInterval = null;
+            }
+        });
+
+        // ---------- INITIAL STATE ----------
+        loggedInSection.style.display = 'none';
+        profilePhoto.classList.remove('visible');
+        photoWarning.classList.remove('visible');
+        logoutBtn.classList.remove('visible');
+
+        console.log('✅ Dashboard ready. Credentials: Tarini123 / Tarini@123');
+        console.log('📝 To edit the entire table, go to the "tableData" array in the EASY EDITING SECTION.');
+        console.log('📋 Use Subject Tabs to filter by subject, Type Buttons to filter by submission type.');
+        console.log('📅 Use Date Filter to filter submissions by due date range.');
+        console.log('📊 For Weekly Test, UT1, Term1, UT2, Term2 - use format "scored/total" in status field (e.g., "15/20")');
+        console.log('💳 For overdue submissions, a "Pay INR 1500 & Submit" button will appear.');
+        console.log('🚫 For overdue submissions, the form link is completely blocked until payment is confirmed.');
+        console.log(`📚 Total rows in table: ${tableData.length}`);
+    })();
+</script>
+</body>
+</html>
